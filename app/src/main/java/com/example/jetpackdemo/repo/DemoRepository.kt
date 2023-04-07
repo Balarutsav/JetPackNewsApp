@@ -9,6 +9,6 @@ import javax.inject.Inject
 class DemoRepository @Inject constructor(private val demoService: DemoService) {
 
     suspend fun doLogin(request: HashMap<String, String>): Response<LoginModel> {
-        return demoService.login()
+        return demoService.login(request)
     }
 }
