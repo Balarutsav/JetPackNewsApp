@@ -155,7 +155,9 @@ fun LoginScreen(navController: NavHostController?, loginViewModel: LoginViewMode
         }
         ApiResources.Status.SUCCESS -> {
             showDialog.value = false
+
             navController?.navigate(DemoScreens.HOME_SCREEN)
+            loginViewModel.setUnknownState()
 
             /* Snackbar(modifier = Modifier.padding(8.dp), backgroundColor = Green, action = {
                     TextButton(onClick = { loginViewModel.dismissError() }) {

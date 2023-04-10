@@ -40,6 +40,9 @@ class LoginViewModel @Inject constructor(
 
     }
 
+    fun setUnknownState(){
+        state.value=ApiResources.unknown()
+    }
     fun dismissError() {
         state.value = ApiResources.unknown()
     }
