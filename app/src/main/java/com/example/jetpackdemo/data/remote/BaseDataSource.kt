@@ -1,4 +1,5 @@
 package com.example.jetpackdemo.data.remote
+
 import com.example.jetpackdemo.data.remote.dto.BaseDTO
 import retrofit2.Response
 
@@ -12,7 +13,8 @@ open class BaseDataSource {
                 return ApiResources.error("", code = response.code())
             } else if (response.body() != null) {
                 val baseResponse = (response.body() as BaseDTO)
-                if (response.isSuccessful && baseResponse.status) {
+
+                if (response.isSuccessful && baseResponse.code == 0) {
                     response.body()?.let {
                         return ApiResources.success(it, baseResponse.message)
                     }
