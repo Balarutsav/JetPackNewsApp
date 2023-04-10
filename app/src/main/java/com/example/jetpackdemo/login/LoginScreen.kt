@@ -4,7 +4,9 @@ import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
@@ -15,10 +17,10 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.input.*
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -26,9 +28,9 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.jetpackdemo.DemoScreens
+import com.example.jetpackdemo.R
 import com.example.jetpackdemo.data.models.LoginReqModel
 import com.example.jetpackdemo.data.remote.ApiResources
-import com.example.jetpackdemo.ui.theme.Green
 import com.example.jetpackdemo.ui.theme.PurplePrimary
 import com.example.jetpackdemo.ui.theme.Red
 
@@ -39,62 +41,20 @@ fun LoginScreen(navController: NavHostController?, loginViewModel: LoginViewMode
     val TAG = "Login Screen"
 
     var email by remember { mutableStateOf(TextFieldValue("Developer5@gmail.com")) }
-
-
     var password by rememberSaveable { mutableStateOf("123456") }
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
     val showDialog = remember { mutableStateOf(false) }
 
     val loginResponse by loginViewModel.mState.collectAsState()
-    Log.e(TAG, "LoginScreen: Api status ${loginResponse.status.name}")
-    when (loginResponse.status) {
-        ApiResources.Status.LOADING -> {
-            showDialog.value = true
-        }
-        ApiResources.Status.SUCCESS -> {
-            showDialog.value = false
-            Snackbar(modifier = Modifier.padding(8.dp), backgroundColor = Green, action = {
-                TextButton(onClick = { loginViewModel.dismissError() }) {
-                    Text("Okay", color = Color.White)
-                }
-            }) {
-                Text(loginResponse.message ?: "", color = Color.White)
-            }
 
-        }
-        ApiResources.Status.ERROR -> {
-            showDialog.value = false
-            Snackbar(modifier = Modifier.padding(8.dp), backgroundColor = Red, action = {
-                TextButton(onClick = { loginViewModel.dismissError() }) {
-                    Text("Dismiss", color = Color.White)
-                }
-            }) {
-                Text(loginResponse.message ?: "Unknown error occurred", color = Color.White)
-            }
-        }
-        else -> {
-
-        }
-    }
-
-    Log.e(TAG, "LoginScreen: Show dialog  status ${showDialog.value}")
-    if (showDialog.value) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Black.copy(alpha = 0.4f)),
-            contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator(color = Color.White)
-        }
-    }
 
     Column(
         verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,
+        horizontalAlignment = Alignment.Start,
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 20.dp, vertical = 20.dp)
+            .verticalScroll(rememberScrollState())
     ) {
         Text(
             text = "Login",
@@ -127,7 +87,9 @@ fun LoginScreen(navController: NavHostController?, loginViewModel: LoginViewMode
             modifier = Modifier
                 .padding(top = 25.dp)
                 .fillMaxWidth(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Text),
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Text, imeAction = ImeAction.Next
+            ),
             placeholder = { Text(text = "Email address") },
         )
 
@@ -137,6 +99,7 @@ fun LoginScreen(navController: NavHostController?, loginViewModel: LoginViewMode
             onValueChange = {
                 password = it
             },
+            visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
             trailingIcon = {
                 val image = if (passwordVisible) Icons.Filled.Visibility
                 else Icons.Filled.VisibilityOff
@@ -151,8 +114,10 @@ fun LoginScreen(navController: NavHostController?, loginViewModel: LoginViewMode
             modifier = Modifier
                 .padding(top = 15.dp)
                 .fillMaxWidth(),
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-            placeholder = { Text(text = "Password") },
+            keyboardOptions = KeyboardOptions(
+                keyboardType = KeyboardType.Password, imeAction = ImeAction.Next
+            ),
+            placeholder = { Text(text = stringResource(R.string.lbl_password)) },
 
 
             )
@@ -168,7 +133,64 @@ fun LoginScreen(navController: NavHostController?, loginViewModel: LoginViewMode
                 backgroundColor = PurplePrimary, contentColor = Color.White
             )
         ) {
-            Text(text = "Login")
+            Text(text = stringResource(R.string.lbl_login))
+        }
+
+        Text(
+            text = stringResource(R.string.lbl_register_msg),
+            modifier = Modifier
+                .padding(top = 20.dp)
+                .clickable {
+                    navController?.navigate(DemoScreens.REGISTER_SCREEN)
+                },
+            fontSize = 15.sp,
+            color = PurplePrimary
+        )
+
+    }
+    Log.e(TAG, "LoginScreen: Api status ${loginResponse.status.name}")
+    when (loginResponse.status) {
+        ApiResources.Status.LOADING -> {
+            showDialog.value = true
+        }
+        ApiResources.Status.SUCCESS -> {
+            showDialog.value = false
+            navController?.navigate(DemoScreens.HOME_SCREEN)
+
+            /* Snackbar(modifier = Modifier.padding(8.dp), backgroundColor = Green, action = {
+                    TextButton(onClick = { loginViewModel.dismissError() }) {
+                        Text("Okay", color = Color.White)
+                    }
+                }) {
+                    Text(loginResponse.message ?: "", color = Color.White)
+
+                }*/
+
+        }
+        ApiResources.Status.ERROR -> {
+            showDialog.value = false
+            Snackbar(modifier = Modifier.padding(8.dp), backgroundColor = Red, action = {
+                TextButton(onClick = { loginViewModel.dismissError() }) {
+                    Text("Dismiss", color = Color.White)
+                }
+            }) {
+                Text(loginResponse.message ?: "Unknown error occurred", color = Color.White)
+            }
+        }
+        else -> {
+
+        }
+    }
+
+    Log.e(TAG, "LoginScreen: Show dialog  status ${showDialog.value}")
+    if (showDialog.value) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black.copy(alpha = 0.4f)),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator(color = Color.White)
         }
     }
 

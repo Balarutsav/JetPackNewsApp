@@ -20,9 +20,10 @@ package com.example.jetpackdemo
 /**
  * Screens used in [DemoDestinations]
  */
- object DemoScreens {
+object DemoScreens {
 
-    const val LOGIN_SCREEN = "tasks"
-    const val REGISTER_SCREEN = "statistics"
+    const val LOGIN_SCREEN = "LoginScreen"
+    const val REGISTER_SCREEN = "RegisterScreen"
+    const val HOME_SCREEN = "HomeScreen"
 }
 

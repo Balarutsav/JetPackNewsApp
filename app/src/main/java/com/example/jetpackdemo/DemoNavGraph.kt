@@ -11,12 +11,15 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.jetpackdemo.home.HomeScreen
+import com.example.jetpackdemo.home.HomeViewModel
 import com.example.jetpackdemo.login.LoginScreen
 import com.example.jetpackdemo.login.LoginViewModel
+import com.example.jetpackdemo.register.RegisterViewModel
 import com.example.jetpackdemo.register.RegistrationScreen
 
 @Composable
-fun NavigationGraph(navController: NavHostController , loginViewModel: LoginViewModel) {
+fun NavigationGraph(navController: NavHostController , loginViewModel: LoginViewModel,registrationViewModel:RegisterViewModel,homeViewModel: HomeViewModel) {
     val context = LocalContext.current
     val statusBarColor = Color.White
 
@@ -32,7 +35,10 @@ fun NavigationGraph(navController: NavHostController , loginViewModel: LoginView
             LoginScreen(navController,loginViewModel)
         }
         composable(DemoScreens.REGISTER_SCREEN) {
-            RegistrationScreen(navController)
+            RegistrationScreen(navController, registrationViewModel)
+        }
+        composable(DemoScreens.HOME_SCREEN){
+            HomeScreen(navController = navController, homeViewModel = homeViewModel)
         }
     }
 }

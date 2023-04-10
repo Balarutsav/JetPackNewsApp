@@ -8,6 +8,7 @@ open class BaseDataSource {
 
     open suspend fun <T> getResult(call: suspend () -> Response<T>): ApiResources<T> {
         try {
+
             val response = call()
             if (response.code() == 403) {
                 return ApiResources.error("", code = response.code())

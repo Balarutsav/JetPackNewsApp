@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">JetpackDemo</string>
+    <string name="lbl_register_msg">Not registered yet? Sign up here.</string>
+    <string name="lbl_login">Login</string>
+    <string name="lbl_password">Password</string>
+    <string name="lbl_register">Register</string>
+    <string name="lbl_msg_register">Please signup to continue</string>
+    <string name="lbl_register_btn">Register</string>
+    <string name="lbl_sign_up">SIGN UP</string>
 </resources>
